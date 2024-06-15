@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom"
 import { symptomFailure, symptomStart, symptomSuccess } from "../redux/slices/symptomSlice";
-import AuthService from "../config/authService";
+import service from "../config/service";
 import { Toast } from "../config/sweetToast";
 import { authFailure, authStart, authSuccess } from "../redux/slices/authSlice";
 import { setCookie } from "../config/cookiesService";
@@ -22,7 +22,7 @@ const PatientRegister = () => {
     const getAllSymptomFunction = async () => {
         try {
             dispatch(symptomStart());
-            const { data } = await AuthService.getAllSymptom();
+            const { data } = await service.getAllSymptom();
             dispatch(symptomSuccess({ data: data.data, type: "more" }));
         } catch (error) {
             dispatch(symptomFailure(error.message));
@@ -45,7 +45,7 @@ const PatientRegister = () => {
         try {
             if (newPatient.fullname !== "" && newPatient.phoneNumber !== "" && newPatient.symptom !== "" && newPatient.doctor !== "") {
                 dispatch(authStart());
-                const { data } = await AuthService.registerPatient(newPatient);
+                const { data } = await service.registerPatient(newPatient);
                 dispatch(authSuccess(data));
                 setCookie("x-token", data.token, 30);
             }

@@ -9,7 +9,7 @@ api.interceptors.request.use((req) => {
     return req;
 });
 
-const AuthService = {
+const service = {
     // patient
     async registerPatient(patient) {
         const res = api.post('/patients/register', patient);
@@ -31,4 +31,4 @@ const AuthService = {
     },
 };
 
-export default AuthService;
+export default service;

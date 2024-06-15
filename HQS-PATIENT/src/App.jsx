@@ -2,7 +2,7 @@ import { Route, Routes, useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { getCookie } from "./config/cookiesService"
-import AuthService from "./config/authService"
+import service from "./config/service"
 import { authSuccess } from "./redux/slices/authSlice"
 import PatientRegister from "./pages/PatientRegister"
 import PatientLayout from "./pages/PatientLayout"
@@ -16,7 +16,7 @@ const App = () => {
     if (getCookie("x-token")) {
       async function patientInfoFunction() {
         try {
-          const { data } = await AuthService.patientInfo();
+          const { data } = await service.patientInfo();
           dispatch(authSuccess(data));
         } catch (error) {
           console.log(error);

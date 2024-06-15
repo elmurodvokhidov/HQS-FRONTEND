@@ -9,7 +9,7 @@ api.interceptors.request.use((req) => {
     return req;
 });
 
-const AuthService = {
+const service = {
     // doctor
     async doctorLogin(doctor) {
         const res = api.post('/doctors/login', doctor);
@@ -29,8 +29,8 @@ const AuthService = {
         const res = api.get('/doctors/patients');
         return res;
     },
-    async markSeen(id) {
-        const res = api.put(`/doctors/patients/${id}/seen`);
+    async markSeen(id, amount) {
+        const res = api.put(`/doctors/patients/${id}/seen`, { amount });
         return res;
     },
     async deletePatient(id) {
@@ -39,4 +39,4 @@ const AuthService = {
     },
 };
 
-export default AuthService;
+export default service;

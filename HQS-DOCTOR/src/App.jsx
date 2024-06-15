@@ -5,7 +5,7 @@ import DoctorDashboard from "./pages/DoctorDashboard"
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { getCookie } from "./config/cookiesService"
-import AuthService from "./config/authService"
+import service from "./config/service"
 import { authSuccess } from "./redux/slices/authSlice"
 import DoctorProfile from "./pages/DoctorProfile"
 
@@ -17,7 +17,7 @@ const App = () => {
     if (getCookie("x-token")) {
       async function doctorInfoFunction() {
         try {
-          const { data } = await AuthService.doctorInfo();
+          const { data } = await service.doctorInfo();
           dispatch(authSuccess(data));
         } catch (error) {
           console.log(error);

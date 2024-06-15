@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { authFailure, authStart, authSuccess } from "../redux/slices/authSlice";
-import AuthService from "../config/authService";
+import service from "../config/service";
 import { useDispatch, useSelector } from "react-redux";
 import { setCookie } from "../config/cookiesService";
 import { Toast } from "../config/sweetToast";
@@ -28,7 +28,7 @@ const DoctorLogin = () => {
         try {
             if (doctor.phoneNumber !== "" && doctor.password !== "") {
                 dispatch(authStart());
-                const { data } = await AuthService.doctorLogin(doctor);
+                const { data } = await service.doctorLogin(doctor);
                 dispatch(authSuccess(data));
                 if (data.token) {
                     setCookie("x-token", data.token, 30);
@@ -36,7 +36,7 @@ const DoctorLogin = () => {
                 }
             }
             else {
-                Toast.fire({ icon: "error", title: "Iltimos, barcha bo'sh joylarni to'ldiring!" });
+                Toast.fire({ icon: "warning", title: "Iltimos, barcha bo'sh joylarni to'ldiring!" });
             }
         } catch (error) {
             dispatch(authFailure(error.message));
@@ -62,6 +62,7 @@ const DoctorLogin = () => {
                     <div className="flex">
                         <label htmlFor="phoneNumber" className="text-sm border border-r-0 rounded-l-lg border-gray-300 p-2.5">+998</label>
                         <input
+                            disabled={isLoading}
                             onChange={getDocCred}
                             type="number"
                             name="phoneNumber"
@@ -80,6 +81,7 @@ const DoctorLogin = () => {
                         <span className="ml-1 text-red-500">*</span>
                     </label>
                     <input
+                        disabled={isLoading}
                         onChange={getDocCred}
                         type={showPass ? "text" : "password"}
                         id="password"
@@ -87,6 +89,7 @@ const DoctorLogin = () => {
                         required
                         className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
                     <button
+                        disabled={isLoading}
                         type='button'
                         onClick={() => setShowPass(!showPass)}
                         className='absolute bottom-2.5 right-2.5 text-xl text-gray-500'

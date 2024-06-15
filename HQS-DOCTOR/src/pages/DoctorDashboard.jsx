@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux"
 import { patientFailure, patientStart, patientSuccess } from "../redux/slices/patientSlice";
-import AuthService from "../config/authService";
+import service from "../config/service";
 import tick from "../assets/icons/tick.svg";
 import copy from "../assets/icons/copy.svg";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import PayModal from "./PayModal";
 
 const DoctorDashboard = () => {
     const { auth } = useSelector(state => state.auth);
     const { patients, isLoading } = useSelector(state => state.patient);
     const dispatch = useDispatch();
     const [copied, setCopied] = useState("");
-    const [loadingCell, setLoadingCell] = useState(null);
+    const [isPatientId, setIsPatientId] = useState(null);
 
     const getAllPatientsFunction = async () => {
         try {
             dispatch(patientStart());
-            const { data } = await AuthService.getAllPatient();
+            const { data } = await service.getAllPatient();
             dispatch(patientSuccess({ data: data.data, type: "more" }));
         } catch (error) {
             dispatch(patientFailure(error.message));
@@ -37,19 +37,7 @@ const DoctorDashboard = () => {
         }, 3000);
     };
 
-    const markSeenFunction = async (patientId) => {
-        try {
-            setLoadingCell({ patientId });
-            await AuthService.deletePatient(patientId);
-            getAllPatientsFunction();
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoadingCell(null);
-        }
-    };
-
-    const filteredPatients = patients.filter(patient => patient?.doctor?._id === auth?._id);
+    const filteredPatients = patients.filter(patient => patient?.doctor?._id === auth?._id && !patient?.seen);
 
     return (
         <div className="container">
@@ -77,11 +65,11 @@ const DoctorDashboard = () => {
                         {/* {isLoading ? <tr><td className="py-12 text-center text-lg odd:bg-white even:bg-gray-50" colSpan={10}>Yuklanmoqda...</td></tr> : <> */}
                         {filteredPatients?.length > 0 ?
                             filteredPatients.map(patient => (
-                                <tr key={patient._id} className={`${patient?.seen && 'text-gray-300'} odd:bg-white even:bg-gray-50 border-b`}>
-                                    <th scope="row" className={`${patient?.seen ? 'text-gray-300' : 'text-gray-900'} px-6 py-4 font-medium whitespace-nowrap`}>
+                                <tr key={patient._id} className="odd:bg-white even:bg-gray-50 border-b">
+                                    <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap">
                                         {patient?.fullname}
                                     </th>
-                                    <td onClick={() => handleCopy(patient?.phoneNumber)} className={`${patient?.seen ? 'text-gray-300' : 'text-blue-600'} px-6 py-4 flex items-center gap-1 cursor-pointer`}>
+                                    <td onClick={() => handleCopy(patient?.phoneNumber)} className="px-6 py-4 flex items-center gap-1 cursor-pointer">
                                         {patient?.phoneNumber}
                                         <img
                                             src={copied === patient?.phoneNumber ? tick : copy}
@@ -94,13 +82,9 @@ const DoctorDashboard = () => {
                                     <td className="px-6 py-4">
                                         <button
                                             disabled={patient?.seen}
-                                            onClick={() => markSeenFunction(patient?._id)}
+                                            onClick={() => setIsPatientId(patient?._id)}
                                             className="font-medium text-blue-600 hover:underline disabled:no-underline disabled:text-gray-300">
-                                            {
-                                                loadingCell && loadingCell.patientId === patient?._id ?
-                                                    <AiOutlineLoading3Quarters className="animate-spin text-sm pc:text-base m-auto" /> :
-                                                    "Ko'rildi"
-                                            }
+                                            Ko'rildi
                                         </button>
                                     </td>
                                 </tr>
@@ -110,6 +94,13 @@ const DoctorDashboard = () => {
                     </tbody>
                 </table>
             </div>
+
+            <PayModal
+                patientId={isPatientId}
+                setIsPatientId={setIsPatientId}
+                getAllPatientsFunction={getAllPatientsFunction}
+                isLoading={isLoading}
+            />
         </div>
     )
 }
