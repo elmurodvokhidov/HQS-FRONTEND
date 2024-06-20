@@ -29,8 +29,8 @@ const service = {
         const res = api.get('/doctors/patients');
         return res;
     },
-    async markSeen(id, amount) {
-        const res = api.put(`/doctors/patients/${id}/seen`, { amount });
+    async markSeen(id) {
+        const res = api.put(`/doctors/patients/${id}/seen`);
         return res;
     },
     async deletePatient(id) {

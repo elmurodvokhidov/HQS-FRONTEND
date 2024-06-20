@@ -4,14 +4,15 @@ import { patientFailure, patientStart, patientSuccess } from "../redux/slices/pa
 import service from "../config/service";
 import tick from "../assets/icons/tick.svg";
 import copy from "../assets/icons/copy.svg";
-import PayModal from "./PayModal";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { Toast } from "../config/sweetToast";
 
 const DoctorDashboard = () => {
     const { auth } = useSelector(state => state.auth);
     const { patients, isLoading } = useSelector(state => state.patient);
     const dispatch = useDispatch();
     const [copied, setCopied] = useState("");
-    const [isPatientId, setIsPatientId] = useState(null);
+    const [loadingCell, setLoadingCell] = useState(null);
 
     const getAllPatientsFunction = async () => {
         try {
@@ -38,6 +39,20 @@ const DoctorDashboard = () => {
     };
 
     const filteredPatients = patients.filter(patient => patient?.doctor?._id === auth?._id && !patient?.seen);
+
+    const markSeenFunction = async (patientId) => {
+        try {
+            setLoadingCell({ patientId });
+            dispatch(patientStart());
+            await service.markSeen(patientId);
+            Toast.fire({ icon: "success", title: 'Muvaffaqiyatli belgilandi' });
+            getAllPatientsFunction();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoadingCell(null);
+        }
+    };
 
     return (
         <div className="container">
@@ -82,9 +97,13 @@ const DoctorDashboard = () => {
                                     <td className="px-6 py-4">
                                         <button
                                             disabled={patient?.seen}
-                                            onClick={() => setIsPatientId(patient?._id)}
+                                            onClick={() => markSeenFunction(patient?._id)}
                                             className="font-medium text-blue-600 hover:underline disabled:no-underline disabled:text-gray-300">
-                                            Ko'rildi
+                                            {
+                                                loadingCell && loadingCell.patientId === patient?._id ?
+                                                    <AiOutlineLoading3Quarters className="animate-spin text-sm pc:text-base m-auto" /> :
+                                                    "Ko'rildi"
+                                            }
                                         </button>
                                     </td>
                                 </tr>
@@ -94,13 +113,6 @@ const DoctorDashboard = () => {
                     </tbody>
                 </table>
             </div>
-
-            <PayModal
-                patientId={isPatientId}
-                setIsPatientId={setIsPatientId}
-                getAllPatientsFunction={getAllPatientsFunction}
-                isLoading={isLoading}
-            />
         </div>
     )
 }
