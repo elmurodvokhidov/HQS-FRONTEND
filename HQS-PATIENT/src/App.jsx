@@ -7,6 +7,7 @@ import { authSuccess } from "./redux/slices/authSlice"
 import PatientRegister from "./pages/PatientRegister"
 import PatientLayout from "./pages/PatientLayout"
 import PatientDashboard from "./pages/PatientDashboard"
+import PatientLogin from "./pages/PatientLogin"
 
 const App = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ const App = () => {
     <div>
       <Routes>
         <Route path="/" element={<PatientRegister />} />
+        <Route path="login" element={<PatientLogin />} />
         <Route path="patient" element={<PatientLayout />}>
           <Route path="dashboard" element={<PatientDashboard />} />
         </Route>

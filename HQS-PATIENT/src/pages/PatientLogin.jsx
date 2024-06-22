@@ -1,38 +1,19 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom"
-import { symptomFailure, symptomStart, symptomSuccess } from "../redux/slices/symptomSlice";
 import service from "../config/service";
 import { Toast } from "../config/sweetToast";
 import { authFailure, authStart, authSuccess } from "../redux/slices/authSlice";
 import { setCookie } from "../config/cookiesService";
 
-const PatientRegister = () => {
+const PatientLogin = () => {
     const { isLoading, isLoggedIn } = useSelector(state => state.auth);
-    const { symptoms } = useSelector(state => state.symptom);
     const dispatch = useDispatch();
     const [newPatient, setNewPatient] = useState({
         fullname: "",
         phoneNumber: "",
-        symptom: "",
-        doctor: "",
     });
     const navigate = useNavigate();
-
-    const getAllSymptomFunction = async () => {
-        try {
-            dispatch(symptomStart());
-            const { data } = await service.getAllSymptom();
-            dispatch(symptomSuccess({ data: data.data, type: "more" }));
-        } catch (error) {
-            dispatch(symptomFailure(error.message));
-            console.log(error.message);
-        }
-    };
-
-    useEffect(() => {
-        getAllSymptomFunction();
-    }, []);
 
     const getPatientCred = (e) => {
         setNewPatient({
@@ -41,11 +22,11 @@ const PatientRegister = () => {
         });
     };
 
-    const registerFunction = async () => {
+    const loginFunction = async () => {
         try {
-            if (newPatient.fullname !== "" && newPatient.phoneNumber !== "" && newPatient.symptom !== "" && newPatient.doctor !== "") {
+            if (newPatient.fullname !== "" && newPatient.phoneNumber !== "") {
                 dispatch(authStart());
-                const { data } = await service.registerPatient(newPatient);
+                const { data } = await service.loginPatient(newPatient);
                 dispatch(authSuccess(data));
                 setCookie("x-token", data.token, 30);
             }
@@ -66,7 +47,7 @@ const PatientRegister = () => {
 
     return (
         <div className="h-screen">
-            <h1 className="text-center text-3xl mt-10">Ro'yhatdan o'tish</h1>
+            <h1 className="text-center text-3xl mt-10">Hisobga kirish</h1>
 
             <form className="max-w-sm mx-auto my-10">
                 <div className="mb-5">
@@ -103,55 +84,18 @@ const PatientRegister = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-6 mb-5">
-                    <div className="w-full">
-                        <label
-                            htmlFor="symptom"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >
-                            <span>Kasallik turi</span>
-                            <span className="ml-1 text-red-500">*</span>
-                        </label>
-                        <select onChange={getPatientCred} name="symptom" id="symptom" required className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                            <option value="" className="italic">None</option>
-                            {
-                                symptoms?.map(sym => (
-                                    <option value={sym?._id} key={sym._id}>{sym?.name}</option>
-                                ))
-                            }
-                        </select>
-                    </div>
-                    <div className="w-full">
-                        <label
-                            htmlFor="doctor"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >
-                            <span>Shifokorni tanglang</span>
-                            <span className="ml-1 text-red-500">*</span>
-                        </label>
-                        <select onChange={getPatientCred} name="doctor" id="doctor" required className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                            <option value="" className="italic">None</option>
-                            {
-                                symptoms.find(sym => sym._id === newPatient.symptom)?.doctors?.map(doc => (
-                                    <option value={doc?._id} key={doc?._id}>{doc?.fullname}</option>
-                                ))
-                            }
-                        </select>
-                    </div>
-                </div>
-
                 <button
-                    onClick={registerFunction}
+                    onClick={loginFunction}
                     type="button"
                     className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 >
-                    {isLoading ? "Loading..." : "Ro'yxatdan o'tish"}
+                    {isLoading ? "Loading..." : "Kirish"}
                 </button>
 
-                <Link to={'/login'} className="text-blue-500 underline block text-center mt-4">Bizning xizmatimizdan avval foydalanganmisiz?</Link>
+                <Link to={'/'} className="text-blue-500 underline block text-center mt-4">Ro'yhatdan o'tish uchun, bu yerga...</Link>
             </form>
         </div>
     )
 }
 
-export default PatientRegister
+export default PatientLogin

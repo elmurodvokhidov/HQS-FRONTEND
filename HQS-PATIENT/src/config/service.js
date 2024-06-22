@@ -15,6 +15,10 @@ const service = {
         const res = api.post('/patients/register', patient);
         return res;
     },
+    async loginPatient(patient) {
+        const res = api.post('/patients/login', patient);
+        return res;
+    },
     async patientInfo() {
         const res = api.get('/patients/info');
         return res;

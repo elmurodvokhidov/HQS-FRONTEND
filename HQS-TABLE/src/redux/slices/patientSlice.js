@@ -22,6 +22,15 @@ const PatientSlice = createSlice({
             else if (action.payload.type === "more") {
                 state.patients = action.payload?.data;
             }
+            else if (action.payload.type === "add") {
+                state.patients.push(action.payload?.data);
+            }
+            else if (action.payload.type === "update") {
+                state.patients = state.patients.map(patient => patient?._id === action.payload?.data?._id ? action.payload?.data : patient);
+            }
+            else if (action.payload.type === "delete") {
+                state.patients = state.patients.filter(patient => patient?._id !== action.payload?.data);
+            }
         },
         patientFailure: (state, action) => {
             state.isLoading = false;
