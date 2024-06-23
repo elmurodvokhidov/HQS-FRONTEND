@@ -4,6 +4,7 @@ import service from "./config/service";
 import { symptomSuccess } from "./redux/slices/symptomSlice";
 import { io } from "socket.io-client";
 import { patientSuccess } from "./redux/slices/patientSlice";
+import { baseURL } from "./config/api";
 
 const App = () => {
   const { patients } = useSelector(state => state.patient);
@@ -12,7 +13,7 @@ const App = () => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    socketRef.current = io('http://localhost:5000');
+    socketRef.current = io(baseURL);
     const socket = socketRef.current;
 
     socket.on('patientAdded', (patient) => {

@@ -1,3 +1,4 @@
 import axios from "axios";
-const api = axios.create({ baseURL: "https://hqs-backend.onrender.com/api" });
+export const baseURL = "https://hqs-backend.onrender.com/api";
+const api = axios.create({ baseURL });
 export default api;
