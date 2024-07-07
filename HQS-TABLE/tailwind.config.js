@@ -16,6 +16,7 @@ export default {
         xsm: '375px',
         small: '320px',
         pc: '1700px',
+        largest: '2000px'
       }
     },
   },
